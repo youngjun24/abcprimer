@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABC Primer</title>
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=b69e1fafe6c5b0e1775632edce8a1366&libraries=services"></script>
+  
+
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard&display=swap');
+        @font-face {
+            font-family:"Moma sans";
+            src:url("font/MoMA Sans Web Bold Regular.woff2") format("woff2"),
+            url("font/MoMA Sans Web Bold Regular.woff") format("woff");
+            font-style:normal;
+            font-weight:400;
+        }
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            text-align: center;
+            background-color: #d7413b;
+            color: white;
+            margin: 0;
+            padding: 0;
+            cursor: url('lipcursor.png') 50 50, auto;
+        }
+        header {
+            padding: 10px;
+            padding-right: 30px;
+            margin-right: 10px;
+            font-family: 'MoMA Sans', sans-serif;
+            font-size: 24px;
+            background-color: #d7413b;
+            /*background-color: #be1b16;*/
+            /*border-bottom: 1px solid white;*/
+            box-shadow:0px 10px 10px rgba(57, 7, 7, 0.236);
+            display: flex;
+            justify-content: flex-end;
+            gap: 210px;
+            cursor: pointer;
+            position: fixed;
+            width: calc(100% - 30px);
+            top: 0;
+            z-index: 200;
+        
+        }
+        .h1 {
+            font-family: 'MoMA Sans', sans-serif;
+            font-size: 12vh;
+            font-weight: bold;
+            color: #ffffff;
+            position: relative;
+            line-height: 1.2;
+            top: 40px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .top-text {
+            text-align: left;
+            margin-left: 40px;
+        }
+        
+        .bottom-text {
+            text-align: right;
+            margin-right: 40px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            padding: 20px;
+            justify-content: center;
+            max-width: 1350px;
+            margin: 0 auto;
+            margin-top: 80px;
+            margin-bottom: 80px;
+        }
+        .card {
+            width: 300px;
+            height: 440px;
+            perspective: 1000px;
+            position: relative;
+            transform-style: preserve-3d; /* 추가 */
+            transition: transform 0.35s cubic-bezier(0.13, 1.03, 0.39, 0.98), 
+                box-shadow 0.35s cubic-bezier(0.13, 1.03, 0.39, 0.98);
+            will-change: transform;
+        }
+        
+        .card:hover .front {
+            transform: rotateX(20deg);
+            box-shadow: 0px 10vw 9vw -6vw rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+            border-top: 1px solid rgba(0, 0, 0, 0.8);
+        }
+        
+        .card:hover .back {
+            transform: rotateX(200deg);
+            box-shadow: 0px -2vw 4vw -2vw rgba(35, 2, 2, 0.68), 
+                        inset 0px -8vw 12vw -5vw rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.8);
+        }
+        
+
+        .card .face {
+            backface-visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.35s cubic-bezier(0.13, 1.03, 0.39, 0.98), box-shadow 0.35s cubic-bezier(0.13, 1.03, 0.39, 0.98);
+            box-shadow: 0px 1.2vw 4vw -1vw rgba(0, 0, 0, 0.6);
+            background-color: white;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: black;
+        }
+        
+        .card .front {
+            transform: rotateX(0deg);
+        }
+
+        .card .back {
+            transform: rotateX(180deg);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* 내부 요소 좌측 정렬 */
+            justify-content: flex-start;
+            padding: 24px;
+            background-color: white;
+            color: black;
+            text-align: left;
+            font-size: 18px;
+            font-weight: normal;
+            box-sizing: border-box; /* 크기 유지 */
+            overflow: hidden;
+            width: 100%; /* 카드 크기 유지 */
+            height: 100%;
+            gap: 10px;
+        }
+        
+
+        .card .back h2 {
+            font-family: 'MoMA Sans', sans-serif;
+            margin-top: 0;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: left;
+            white-space: nowrap; /* 줄바꿈 방지 */
+            overflow: hidden; /* 넘치는 텍스트 숨김 */
+            text-overflow: ellipsis; /* 말줄임표 (...) 표시 */
+            max-width: 100%;
+            flex-shrink: 0;
+        }
+
+        .card .back p {
+            margin-top: 0;
+            font-size: 14px;
+            line-height: 1.3;
+            max-width: 100%; /* 너무 커지는 것 방지 */
+            overflow: hidden; /* 넘치는 텍스트 숨김 */
+        }
+
+        .card .back .content-scrollable {
+            overflow-y: auto;
+            flex-grow: 1;
+          }
+
+        .card .back.bread {
+            background: url('bread.jpg') no-repeat center center / cover;
+        }
+
+        .card:hover {
+            transform: rotateX(10deg);
+            box-shadow: 0px 10vw 9vw -6vw rgba(0, 0, 0, 0.5);
+            cursor: url('handcursor.png') 10 50, pointer;
+        }
+        
+        .card.flipped .front {
+            transform: rotateX(180deg);
+        }
+
+        .card.flipped .back {
+            transform: rotateX(0deg);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #d7413b;
+            color: white;
+            padding: 40px;
+            box-sizing: border-box;
+
+        }
+        
+        .modal-content {
+            font-size: 20px;
+            width: 42%;
+            line-height: 1.5;
+            text-align: left;
+            margin-left: auto;
+            word-break: keep-all;
+        }
+
+        #modalOpener, #modalCloser {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #e4dcdc;
+          }
+        
+        #modalOpener.hover-effect,
+        #modalCloser.hover-effect {
+        color: #ffffff;
+        transform: scale(1.1);
+        text-shadow: 0 0 10px rgb(255, 255, 100);
+        }
+          
+        
+        .modal, .modal-content, header {
+            cursor: url('lipcursor.png') 50 50, pointer !important;
+        }
+        
+        .small-audio {
+            width: 90%;
+        }
+
+        #toggle-bread {
+            background-color: rgb(255, 255, 255); /* 주황색 배경 */
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 30px;
+            transition: background-color 0.3s;
+            box-shadow:8px 8px 10px rgba(57, 7, 7, 0.107);
+          }
+
+        #chocoCanvas {
+            width: 100%;
+            height: 40%;  /* 캔버스 높이 조정 */
+            background-color: #f8e8c8;
+            border: 1px solid #8b5a2b;
+            border-radius: 15px;
+            display: block;
+            cursor: url('choco.png') 50 50, pointer !important;
+        }
+          
+          #card-d .centered-gif {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /*transform: translate(-65%, -30%);*/
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: auto;
+            pointer-events: none; /* 클릭 이벤트 방지 */
+            z-index: 2;
+            /*rotate: 20deg;*/
+            border-radius: 100px;
+          }
+
+          #card-h .side1-gif {
+            position: absolute;
+            top: 50%;
+            left: 40%;
+            transform: translate(-65%, -30%);
+            width: 180px;
+            height: auto;
+            pointer-events: none; /* 클릭 이벤트 방지 */
+            z-index: 2;
+            rotate: -20deg;
+          }
+
+          #card-h .side2-gif {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translate(-65%, -30%);
+            width: 140px; /* 원하는 크기로 조절 */
+            height: auto;
+            pointer-events: none; /* 클릭 이벤트 방지 */
+            z-index: 2; /* 이미지보다 위에 */
+            rotate: 10deg;
+            transform: scaleX(-1);
+          }
+
+          #card-h .centered-png {
+            position: absolute;
+            top: 75%;
+            left: 45%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+          }
+          
+          #card-h .hover-bee {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            display: none;
+            z-index: 3;
+            pointer-events: none;
+            transform: scaleX(-1);
+        }      
+        
+        .kiwi-container {
+            z-index: -20;
+        }
+
+        #card-l form {
+            font-size: 14px;
+          }
+        
+          /* 기본 라디오 숨김 */
+          input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            position: relative;
+            top: 3px;
+            margin-right: 8px;
+            cursor: pointer;
+          }
+        
+          /* 체크됐을 때 */
+          input[type="radio"]:checked {
+            background-color: yellow;
+            border-color: orange;
+          }
+
+          #loadJelly {
+            display: block;
+            margin: 0 auto;
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+          }
+          
+          #loadJelly:hover {
+            background-color: #c0392b;
+          }
+          
+          #jellyList {
+            text-align: left;        
+            padding-left: 20px;   
+            margin-top: 10px;
+            line-height: 1.3;
+          }
+
+          .marquee-wrapper1 {
+            position: absolute;
+            top: 250px;
+            left: -50px;
+            right: -50px;
+            width: calc(100% + 100px);
+            transform: rotate(-10deg);
+          }
+
+          .marquee-wrapper2 {
+            position: absolute;
+            top: 280px;
+            left: -50px;
+            right: -50px;
+            width: calc(100% + 100px);
+            transform: rotate(10deg);
+          }
+          
+          .melon-marquee {
+            color: white;
+            background-color: #94ff22;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 1em;
+          }         
+          
+          #showNutBtn {
+            display: block;
+            margin: 0 auto; 
+            background-color: #e39d10;
+            color: white;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+          }
+
+          #card-o .centered-png {
+            position: absolute;
+            top: 75%;
+            left: 45%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+          }
+
+          progress {
+            width: 100%;
+            height: 15px;
+            -webkit-appearance: none;
+            appearance: none;
+          }
+          
+          progress::-webkit-progress-bar {
+            background-color: #e2d9d4;
+            border-radius: 10px;
+          }
+          
+          progress::-webkit-progress-value {
+            background-color: rgb(255, 135, 105);
+            border-radius: 10px;
+          }
+
+          #card-p .centered-png {
+            position: absolute;
+            top: 80%;
+            left: 80%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+          }
+          
+          .quesa-area {
+            position: absolute;
+            width: 300px;
+            height: 400px;
+            margin: 0 auto;
+          }
+          
+          #tortilla {
+            width: 120px;
+            position: absolute;
+            top: 60%;
+            left: 40%;
+            z-index: 1;
+          }
+          
+          .ingredient {
+            width: 50px;
+            top: 80%;
+            position: absolute;
+            cursor: grab;
+            z-index: 10;
+          }
+
+          .ingredient[alt="치즈"] {
+            top: 200px;
+            left: 10px;
+          }
+          .ingredient[alt="토마토"] {
+            top: 230px;
+            left: 70px;
+          }
+          .ingredient[alt="피망"] {
+            top: 260px;
+            left: 20px;
+          }
+          .ingredient[alt="돼지고기"] {
+            top: 180px;
+            left: 100px;
+          }
+          
+          .random-image-box {
+            position: relative;
+            width: 100%;
+            height: 40%;
+            border: 2px dashed #ccc;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            overflow: hidden;
+            background-image: url("rasberryfield.jpg");
+          }
+          
+          #rasberry {
+            position: absolute;
+            width: 40px;
+            transition: all 0.3s ease;
+          }
+
+          .watermelon-section {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%); /*전체 중앙 정렬 */
+            text-align: center;
+          }          
+          
+          #watermelon {
+            width: 200px;
+            height: 130px;
+            transition: width 0.3s ease;
+            display: block;
+            margin: 0 auto 10px auto;
+          }          
+          
+          .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+          }
+          
+          .btn-group button {
+            color: #000000;
+            padding: 5px 20px;
+            font-size: 20px;
+            border: 3px solid #00801e;
+            background-color: #ff57579e;
+            cursor: pointer;
+            border-radius: 50px;
+          }
+          
+          .three-container {
+            width: 100%;
+            height: 50%;
+            position: relative;
+            background-color: #d7413b;
+            overflow: hidden;
+          }
+
+          .zucchini-index1 {
+            position: absolute;
+            top: 55%;
+            left: 15%;
+            transform: rotate(40deg);
+            width: 300px;
+            z-index: 100;
+            opacity: 80%;
+          }
+          
+          .zucchini-index2 {
+            position: absolute;
+            top: 55%;
+            left: 25%;
+            transform: rotate(-10deg);
+            width: 200px;
+            z-index: 200;
+            filter: brightness(-1);
+          }
+
+          .zucchini-index3 {
+            position: absolute;
+            top: 45%;
+            left: 15%;
+            transform: rotate(40deg);
+            width: 180px;
+            z-index: 300;
+            filter: brightness(1.5);
+          }
+
+          #curtain {
+            position: fixed;
+            top: -100%;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #d7413b;
+            z-index: 9999;
+            transition: top 1.5s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 30px;
+            color: white;
+            font-size: 24px;
+          }
+          
+          #curtain.folded {
+            top: 0; /* 내려옴 */
+          }
+          
+        
+          @keyframes blink {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+          }
+          
+          
+          #reloadBtn {
+            all: unset; /*버튼 기본 스타일 제거! */
+            cursor: pointer;
+            font-size: 20px;
+            color: white;
+            text-decoration: underline;
+            
+          }
+          
+          
+          #hurryModal {
+            display: none;
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 252, 214, 0.825);
+            padding: 25px 45px;
+            color: #d7413b;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 10000;
+            animation: blink 0.7s infinite alternate;
+            white-space: nowrap;
+            max-width: 90vw;
+          }
+          
+          
+          
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+        }
+      }
+      </script>
+      
+</head>
+<body>
+    <header>
+        <div onclick="openModal('modal1')" id="modalOpener">what's this site for ?</div>
+        <div onclick="closeModal('modal1')" id="modalCloser">ABC primer</div>
+    </header>
+    
+    <div class="h1">
+        <div class="top-text">A website for children 👶</div>
+        <div class="bottom-text">📖 studying ABC</div>
+    </div>
+    
+    
+    <div class="grid">
+        <div class="card" id="card-a">
+            <div class="front face"><img src="A.png" alt="A - Audio" width="100%" height="100%"></div>
+            <div class="back face">
+                <h2>Audio</h2>
+                <p><b>A는 Apple<br>
+                    A는 Audio</b><br>
+                    <br>
+                    Audio 코드는 소리를 불러와서<br>
+                    재생할 수 있는 속성을 가집니다.<br>
+                    <br>
+                    해당 카드를 클릭하며<br>
+                    아삭 소리를 들어보세요!</p>
+                    <audio controls class="small-audio">
+                        <source src="apple-bite.mp3" type="audio/mpeg">
+                        해당 브라우저에서는 오디오를 지원하지 않습니다.
+                    </audio>
+            </div>
+        </div>
+        <div class="card" id="card-b">
+            <div class="front face"><img src="B.png" alt="B - Bread" width="100%" height="100%"></div>
+            <div class="back face" id="card-b-back">
+                <h2>Background</h2>
+                <p><b>B는 Bread<br>
+                    B는 Background</b><br>
+                    <br>
+                    Background 코드는<br>
+                    배경을 변경하는 속성을 가집니다.<br>
+                    <br>
+                    아래 빵 버튼을 클릭하며<br>
+                    배경을 변경해보세요!</p>
+                    <button id="toggle-bread">🥖</button>
+            </div>
+        </div>
+        <div class="card" id="card-c">
+            <div class="front face"><img src="C.png" alt="C - Canvas" width="100%" height="100%"></div>
+            <div class="back face">
+                <h2>Canvas</h2>
+                <p><b>C는 Chocolate<br>
+                    C는 Canvas</b><br>
+                    <br>
+                    Canvas 코드는 캔버스를 불러와서<br>
+                    활용할 수 있는 속성을 가집니다.<br>
+                    <br>
+                    해당 카드의 캔버스를 이용해서<br>
+                    초콜릿으로 그림을 그려보세요!
+                </p>
+                <canvas id="chocoCanvas"></canvas>
+            </div>
+        </div>
+        <div class="card" id="card-d">
+            <div class="front face"><img src="D.png" alt="D - Details" width="100%" height="100%">
+            <img src="donut.gif" alt="GIF" class="centered-gif">
+            </div>
+            <div class="back face">
+                <h2>Details</h2>
+                <p><b>D는 Donut<br>
+                    D는 Details</b><br>
+                    <br>
+                    Details 코드는 버튼을 누르면<br>
+                    숨겨진 글이 나오도록 만들어 줍니다.<br>
+                    <br>
+                    아래 Donut을 클릭해서<br>
+                    세부 레시피를 열어서 읽어보세요!
+                </p>
+
+                <details id="recipe">
+                    <summary>Donut</summary>
+                    <p>
+                      1. 버터와 설탕 계란을 넣고 섞어준다.<br>
+                      2. 박력분과 베이킹파우더를 넣고 반죽한다.<br>
+                      3. 반죽을 냉장고에 30분 둔다.<br>
+                      4. 도넛 모양으로 만들어 튀겨준다!<br>
+                    </p>
+                </details>
+            </div>
+        </div>
+        <div class="card" id="card-e">
+            <div class="front face"><img src="E.png" alt="E - Em" width="100%" height="100%"></div>
+            <div class="back face">
+                <h2>Em</h2>
+                <p><b>E는 Egg<br>
+                    E는 Em</b><br>
+                    <br>
+                    Em 태그는 문장에서 중요한 글자를<br>
+                    이탤릭체로 강조해주는 속성을 가집니다.<br>
+                    <br>
+                    <em>이렇게요!🥚🥚</em><br>
+                    <br>
+                    문장에서<br>
+                    <em>특정한🥚</em> 부분만 <em>강조🥚</em>할 수도 있답니다.
+                </p>
+            </div>
+        </div>
+        <div class="card" id="card-f">
+            <div class="front face"><img src="F.png" alt="F - Fetch" width="100%" height="100%"></div>
+            <div class="back face">
+                <h2>Fetch</h2>
+                <p><b>F는 French fries<br>
+                    F는 Fetch</b><br>
+                    <br>
+                    Fetch 코드는 api를 활용하여 <br>
+                    외부 서버에서 데이터를 불러올 수 있습니다.<br>
+                    <br>
+                    이렇게요!
+                </p>
+                <div id="map" style="width:100%;height: 170px;"></div>
+            </div>
+        </div>
+        <div class="card" id="card-g">
+            <div class="front face"><img src="G.png" alt="G - GetElementById" width="100%" height="100%"></div>
+            <div class="back face">
+                <h2>GetElementById</h2>
+                <p><b>G는 Grape<br>
+                    G는 GetElementById</b><br>
+                    <br>
+                    GetElementById 코드는<br>
+                    JS에서 무언가를 불러올 수 있습니다.<br>
+                    <br>
+                    좌우 방향키로 여우를 움직여<br>
+                    여우가 포도를 받을 수 있게 해주세요!
+                </p>
+                <img src="fox.png" alt="여우" id="fox"
+                style="width: 100px; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);">
+                <img src="grape.png" alt="포도" id="grape"
+                style="width: 60px; position: absolute; top: -100px; left: 50%; transform: translateX(-50%);">
+            </div>
+        </div>
+        <div class="card" id="card-h">
+            <div class="front face"><img src="H.png" alt="H - Hover" width="100%" height="100%">
+                <img src="bee.gif" alt="GIF" class="side1-gif">
+                <img src="bee.gif" alt="GIF" class="side2-gif">
+            </div>
+            <div class="back face">
+                <h2>Hover</h2>
+                <p><b>H는 Honey<br>
+                    H는 Hover</b><br>
+                    <br>
+                    Hover 코드는 마우스를 오버하면<br>
+                    여러가지 효과를 줄 수 있습니다.<br>
+                    <br>
+                    꿀단지에 마우스를 올려<br>
+                    벌을 나타나게 해보세요!
+                </p>
+                <img src="honey.png" alt="png" class="centered-png">
+                <img src="bee.gif" alt="GIF" class="hover-bee">
+            </div>
+        </div>
+        <div class="card" id="card-i">
+            <div class="front face"><img src="I.png" alt="I - Iframe" width="100%" height="100%"></div>
+            <div class="back face">
+                <h2>Iframe</h2>
+                <p><b>I는 Ice cream<br>
+                    I는 Iframe</b><br>
+                    <br>
+                    Iframe 코드는 프레임을 만들어<br>
+                    외부 페이지를 가져올 수 있습니다.<br>
+                    <br>
+                    이렇게요!
+                </p>
+                <iframe
+                    src="https://www.haitaiic.co.kr/product/brand.php"
+                    title="아이스크림"
+                    width="100%"
+                    height="170"></iframe>
+            </div>
+        </div>
+        <div class="card" id="card-j">
+            <div class="front face"><img src="J.png" alt="J - JSON" width="100%" height="100%"></div>
+            <div class="back face">
+                <h2>JSON</h2>
+                <p><b>J는 Jelly<br>
+                    J는 JSON</b><br>
+                    <br>
+                    JSON은 외부에서 리스트나<br>
+                    무언가를 불러올 수 있습니다.<br>
+                    <br>
+                    맛있는 젤리 브랜드<br>
+                    리스트를 불러와보세요!
+                </p>
+                <button id="loadJelly" style="margin-top: 10px;">젤리 추천 불러오기</button>
+                <ul id="jellyList" style="margin-top: 10px; text-align: left; font-size: 14px;"></ul>
+
+            </div>
+        </div>
+        <div class="card" id="card-k">
+            <div class="front face"><img src="K.png" alt="K - Keydown" width="100%" height="100%"></div>
+            <div class="back face">
+                <h2>Keydown</h2>
+                <p><b>K는 Kiwi<br>
+                    K는 Keydown</b><br>
+                    <br>
+                    Keydown 이벤트는 키보드 클릭으로<br>
+                    여러가지 효과를 줄 수 있습니다.<br>
+                    <br>
+                    키보드의 🅺키를 눌러<br>
+                    키위를 띄워보세요!<br>
+                    </p>
+                    <div id="kiwi-container" style="position: absolute; width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+        <div class="card" id="card-l">
+            <div class="front face"><img src="L.png" alt="L - Label" width="100%" height="100%"></div>
+            <div class="back face">
+                <h2>Label</h2>
+                <p><b>L은 Lemon<br>
+                    L은 Label</b><br>
+                    <br>
+                    Label 코드는 폼 양식에<br>
+                    이름을 붙일 수 있습니다.<br>
+                    <br>
+                    레몬을 주로 먹는 방식을 골라보세요!
+                </p>
+                <form>
+                    <label>
+                      <input type="radio" name="lemon" value="ade">
+                      레몬에이드
+                    </label><br>
+                    <label>
+                      <input type="radio" name="lemon" value="pie">
+                      레몬파이
+                    </label><br>
+                    <label>
+                      <input type="radio" name="lemon" value="madeleine">
+                      레몬마들렌
+                    </label><br>
+                    <label>
+                      <input type="radio" name="lemon" value="tea">
+                      레몬청
+                    </label>
+                  </form>
+            </div>
+        </div>
+        <div class="card" id="card-m">
+            <div class="front face"><img src="M.png" alt="D - Details" width="100%" height="100%"></div>
+            <div class="back face" style="position: relative;">
+                <h2>Marquee</h2>
+                <p><b>M은 Melon<br>
+                    M은 Marquee</b><br>
+                    <br>
+                    Marquee 태그는 흘러가는<br>
+                    텍스트나 이미지를 만들 수 있습니다.<br>
+                    <br>
+                    이렇게요!<br>
+                </p>
+                <div class="marquee-wrapper1">
+                    <marquee behavior="scroll" direction="left" scrollamount="5" class="melon-marquee">
+                      The scent of melon drifting through the summer breeze. Sweet scent of melon drifting through the summer breeze.
+                    </marquee></div>
+                    <div class="marquee-wrapper2">
+                    <marquee behavior="scroll" direction="right" scrollamount="6" class="melon-image-marquee" id="melonMarquee">
+                    </marquee>                    
+                  </div>                                    
+            </div>
+        </div>
+        <div class="card" id="card-n">
+            <div class="front face"><img src="N.png" alt="N - Noscript" width="100%" height="100%"></div>
+            <div class="back face">
+                <h2>Noscript</h2>
+                <div class="content-scrollable">
+                <p><b>N은 Nuts<br>
+                    N은 Noscript</b><br>
+                    <br>
+                    Noscript 태그는 자바스크립트가 꺼진 환경에서의 안내 메시지를 제공합니다.<br>
+                    <br>
+                    지금 JS가 꺼져있다면<br>
+                    <b>⚠️ JavaScript가 꺼져 있어요!<br>기능이 작동하지 않습니다 🥜</b><br>
+                    이렇게 보일 거예요! 완전 nuts해지겠죠?🤣<br>
+                    <br>
+                    JS가 켜져있다면 땅콩 버튼으로 땅콩이 계속 추가돼요!
+                </p>
+                <button id="showNutBtn">🥜 땅콩 등장!</button>
+                <div id="nutImageContainer" style="margin-top: 10px;"></div>
+                <noscript>
+                    <p style="color: red; font-weight: bold;">
+                      ⚠️ JavaScript가 꺼져 있어요! 기능이 작동하지 않습니다 🥜
+                    </p>
+                  </noscript>
+            </div>
+        </div>
+    </div>
+    <div class="card" id="card-o">
+        <div class="front face"><img src="O.png" alt="O - Opacity" width="100%" height="100%"></div>
+        <div class="back face">
+            <h2>Opacity</h2>
+            <p><b>O는 Orange<br>
+                O는 Opacity</b><br>
+                <br>
+                Opacity는 물체의 투명도를<br>
+                조절할 수 있습니다.<br>
+                <br>
+                오렌지를 클릭하며<br>
+                사라지게 해보세요!
+            </p>
+            <img src="orange.png" alt="orange" class="centered-png" id="orangeImg">
+        </div>
+    </div>
+    <div class="card" id="card-p">
+        <div class="front face"><img src="P.png" alt="P - Progress" width="100%" height="100%"></div>
+        <div class="back face">
+            <h2>Progress</h2>
+            <p><b>P는 Peach<br>
+                P는 Progress</b><br>
+                <br>
+                Progress는 어떤 작업의<br>
+                진행률을 나타낼 수 있습니다.<br>
+                <br>
+                당신의 복숭아 호감도를<br>
+                숫자로 적어주세요!
+            </p>
+            <input type="number" id="peachInput" min="0" max="100" placeholder="예: 80" style="width: 25%;">
+            <progress id="peachProgress" value="0" max="100"></progress>
+            <p id="peachText">🍑 호감도: 0%</p>
+            <img src="peach.png" alt="peach" class="centered-png" id="peachImg">
+        </div>
+    </div>
+    <div class="card" id="card-q">
+        <div class="front face"><img src="Q.png" alt="Q - QuerySelector" width="100%" height="100%"></div>
+        <div class="back face">
+            <h2>QuerySelector</h2>
+            <p><b>Q는 Quesadilla<br>
+                Q는 QuerySelector</b><br>
+                <br>
+                QuerySelector 코드는<br>
+                JS에서 무언가를 불러올 수 있습니다.<br>
+                <br>
+                재료들을 또띠아 위로 드래그해서<br>
+                퀘사디아를 완성해보세요!
+            </p>
+            <div class="quesa-area">
+                <img src="tortilla.png" id="tortilla" alt="또띠아" />
+                <img src="cheese.png" class="ingredient" draggable="true" alt="치즈">
+                <img src="tomato.png" class="ingredient" draggable="true" alt="토마토">
+                <img src="pepper.png" class="ingredient" draggable="true" alt="피망">
+                <img src="pork.png" class="ingredient" draggable="true" alt="고기">
+              </div>
+              
+              <p id="completeText" style="display: none;">🌮 퀘사디아 완성!</p>
+        </div>
+    </div>
+    <div class="card" id="card-r">
+      <div class="front face"><img src="R.png" alt="R - Random" width="100%" height="100%"></div>
+      <div class="back face">
+          <h2>Random</h2>
+          <p><b>R은 Rasberry<br>
+              R은 Random</b><br>
+              <br>
+              Random은 랜덤한 값의<br>
+              무언가를 받을 수 있습니다.<br>
+              <br>
+              박스를 클릭하며 랜덤한 이미지 위에<br>
+              라즈베리를 랜덤하게 올려 보세요!
+          </p>
+          <div class="random-image-box" id="randomBox">
+            <img src="rasberry.png" alt="raspberry" id="rasberry" />
+          </div>
+      </div>
+  </div>
+  <div class="card" id="card-s">
+    <div class="front face"><img src="S.png" alt="S - Strong" width="100%" height="100%"></div>
+    <div class="back face">
+        <h2>Strong</h2>
+        <p><b>S는 Strawberry<br>
+            S는 Strong</b><br>
+            <br>
+            Strong 태그는 문장에서 중요한<br>
+            부분을 볼드하게 강조해줍니다.<br>
+            <br>
+            <strong>이렇게요!🍓🍓</strong><br>
+            <br>
+            문장에서<br>
+            <strong>특정한🍓</strong> 부분만 <strong>강조🍓</strong>할 수도 있답니다.
+        </p>
+    </div>
+</div>
+<div class="card" id="card-t">
+  <div class="front face"><img src="T.png" alt="T - Textarea" width="100%" height="100%"></div>
+  <div class="back face">
+      <h2>Textarea</h2>
+      <p><b>T는 Tomato<br>
+          T는 Textarea</b><br>
+          <br>
+          textarea 태그는 웹페이지에서<br>
+          여러 줄의 글을 입력할 수 있게 해줍니다.<br>
+          <br>
+          🍅토마토에 대한🍅<br>당신의 생각을 적어보세요!🍅
+      </p>
+      <textarea id="tomatoText" rows="5" cols="25" placeholder="예: 토마토는 너무 귀여워... 🍅"></textarea>
+      <button id="saveTomato">저장</button>
+      <p id="savedNotice" style="display: none;">🍅토마토 기록 완료!</p>
+  </div>
+</div>
+<div class="card" id="card-u">
+  <div class="front face"><img src="U.png" alt="U - U" width="100%" height="100%"></div>
+  <div class="back face">
+      <h2>U</h2>
+      <p><b>U는 Udon<br>
+          U는 U</b><br>
+          <br>
+          U 태그는 문장에서 특정한<br>
+          부분에 밑줄을 줄 수 있습니다.<br>
+          <br>
+          <u>이렇게요!🍜🍜</u><br>
+          <br>
+          문장에서<br>
+          <u>특정한🍜</u> 부분만 <u>밑줄을🍜</u>줄 수도 있답니다.
+      </p>
+  </div>
+</div>
+<div class="card" id="card-v">
+  <div class="front face"><img src="V.png" alt="V - Video" width="100%" height="100%"></div>
+  <div class="back face">
+      <h2>Video</h2>
+      <p><b>V는 Vanilla<br>
+          V는 Video</b><br>
+          <br>
+          Video 태그는 비디오를<br>
+          추가하여 재생할 수 있습니다.<br>
+          <br>
+          바닐라 아이스크림을 만들기 위해<br>
+          바닐라빈을 손질하는 영상을 확인해보세요!<br>
+          <br>
+          ⬇︎
+          <br>
+      </p>
+      <video controls width="250">
+        <source src="vanilla.mp4" type="video/mp4">
+        브라우저가 video 태그를 지원하지 않습니다.
+      </video>
+  </div>
+</div>
+<div class="card" id="card-w">
+  <div class="front face"><img src="W.png" alt="W - Width" width="100%" height="100%"></div>
+  <div class="back face">
+      <h2>Width</h2>
+      <p><b>W는 Watermelon<br>
+          W는 Width</b><br>
+          <br>
+          Width는 객체의 넓이를<br>
+          지정해주는 요소입니다.<br>
+          <br>
+          수박이 커지면 더 많이 먹을 수 있을텐데🍉🍉
+          버튼을 눌러 수박의 넓이를 조절해보세요!
+      </p>
+      <div class="watermelon-section">
+        <img src="watermelon.png" id="watermelon">
+        <div class="btn-group">
+          <button id="shrinkBtn">◀</button>
+          <button id="growBtn">▶</button>
+        </div>
+        <p id="widthText">Width: 200px</p>
+      </div>
+  </div>
+</div>
+<div class="card" id="card-x">
+  <div class="front face"><img src="X.png" alt="X - X axis" width="100%" height="100%"></div>
+  <div class="back face">
+      <h2>X axis</h2>
+      <p><b>X는 Xylocarp<br>
+          X는 X axis</b><br>
+          <br>
+          X axis는 x축을 의미합니다.<br>
+          three.js에서 x축으로 사용할 수 있습니다.<br>
+          <br>
+          x축으로 회전하는 코코넛을 확인해보세요!
+      </p>
+      <div class="three-container" id="x-model-container"></div>
+  </div>
+</div>
+<div class="card" id="card-y">
+  <div class="front face"><img src="Y.png" alt="Y - Y axis" width="100%" height="100%"></div>
+  <div class="back face">
+      <h2>Y axis</h2>
+      <p><b>Y는 Yogurt<br>
+          Y는 Y axis</b><br>
+          <br>
+          Y axis는 Y축을 의미합니다.<br>
+          three.js에서 Y축으로 사용할 수 있습니다.<br>
+          <br>
+          Y축으로 회전하는 요거트를 확인해보세요!
+      </p>
+      <div class="three-container" id="y-model-container"></div>
+  </div>
+</div>
+<div class="card" id="card-z">
+  <div class="front face"><img src="Z.png" alt="Z - Z-index" width="100%" height="100%"></div>
+  <div class="back face">
+      <h2>Z-index</h2>
+      <p><b>Z는 Zucchini <br>
+          Z는 Z-index</b><br>
+          <br>
+          Z-index는 페이지 내에서<br>
+          레이어처럼 z축의 높낮이를 조절합니다.<br>
+          <br>
+          z-index 값에 따른 주키니를 확인해보세요!
+      </p>
+      <img src="zucchini.png" alt="zucchini" class="zucchini-index1">
+      <img src="zucchini.png" alt="zucchini" class="zucchini-index2">
+      <img src="zucchini.png" alt="zucchini" class="zucchini-index3">
+  </div>
+</div>
+
+</div><!--그리드 div-->
+    
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <p>아이들에게 알파벳을 가르칠때, 교사와 부모들은 종종 알파벳 포스터나 알파벳 책을 사용한다. 이것들을 ABC PRIMER라고 부른다.<br>
+                <br>
+                이 웹사이트는 다차원편집디자인 수업의 일환으로 코딩과 관련지은 ABC PRIMER를 직접 작성해보고, 그것을 볼 수 있도록 제작되었습니다.<br>아이들을 위한 음식 카드를 통하여 ABC를 공부할 수 있습니다. 
+                <br><br>
+                겉으로는 아이들을 위한 ABC카드를 보여주지만 각 카드를 클릭하면 뒷면에 해당 철자와 관련한 코드 설명과 기능이 나옵니다. 
+                <br><br>
+                코드를 처음 배우는 사람들 역시 코드를 배우는 입장에선 아이들과 같기에 해당 사이트를 통하여 A-Z까지의 HTML, CSS, JS 기능을 배울 수 있습니다.
+                <br><br>
+                카드를 눌러보며 다양한 체험과 공부를 해보세요!
+                <br>
+                <b><u>카드는 1분마다 치워집니다 ! 빠르게 가지고 노세요 !</u></b>
+                </p>
+        </div>
+    </div>
+    
+    <div id="hurryModal">⏳ Hurry! The cards will disappear soon!<br>
+                      서둘러서 공부하세요! 카드가 곧 치워집니다!</div>
+
+    <div id="curtain">
+      <button id="reloadBtn">🃏다시 카드 깔고 공부하러 가기</button>
+    </div>
+    
+
+    <!--threejs-->
+    <script type="module">
+      import * as THREE from 'three';
+      import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+      
+      function initThreeModel(containerId, modelPath, axis) {
+        const container = document.getElementById(containerId);
+        const scene = new THREE.Scene();
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
+        
+        if (containerId === "x-model-container") {
+          camera.position.z = 9;
+        } else if (containerId === "y-model-container") {
+          camera.position.z = 9;
+          camera.position.y = 1.5;
+        }
+      
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(width, height);
+        container.appendChild(renderer.domElement);
+      
+        const light = new THREE.HemisphereLight(0xffffff, 0x444444, 20);
+        scene.add(light);
+      
+        const loader = new GLTFLoader();
+        loader.load(modelPath, gltf => {
+          const model = gltf.scene;
+
+          if (containerId === "x-model-container") {
+            model.scale.set(0.8, 0.8, 0.8);
+          } else if (containerId === "y-model-container") {
+            model.scale.set(1.2, 1.2, 1.2);
+          }
+
+          scene.add(model);
+      
+          function animate() {
+            requestAnimationFrame(animate);
+            model.rotation[axis] += 0.01;
+            renderer.render(scene, camera);
+          }
+          animate();
+        });
+      }
+      
+      let xLoaded = false;
+      let yLoaded = false;
+      
+      document.querySelectorAll(".card").forEach(card => {
+        card.addEventListener("click", function () {
+          card.classList.toggle("flipped");
+      
+          // 모델 로딩
+          if (card.id === "card-x" && card.classList.contains("flipped") && !xLoaded) {
+            setTimeout(() => {
+              initThreeModel('x-model-container', 'models/coconut.glb', 'x');
+            }, 200);
+            xLoaded = true;
+          }
+      
+          if (card.id === "card-y" && card.classList.contains("flipped") && !yLoaded) {
+            setTimeout(() => {
+              initThreeModel('y-model-container', 'models/yogurt.glb', 'y');
+            }, 200);
+            yLoaded = true;
+          }
+        });
+      });
+      </script>
+      
+      
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll(".card").forEach(card => {
+                
+
+                const details = card.querySelector("details");
+                if (details) {
+                    details.addEventListener('click', function (event) {
+                        event.stopPropagation();
+                    });
+                }
+
+                // 카드 C의 캔버스 클릭 시 이벤트 전파 방지
+                const canvas = document.getElementById("chocoCanvas");
+                canvas.addEventListener("click", function(event) {
+                event.stopPropagation(); // 클릭 이벤트가 부모로 전파되지 않도록 막음
+                });
+
+                document.querySelectorAll('#card-l label').forEach((label) => {
+                    label.addEventListener('click', (event) => {
+                      event.stopPropagation(); // 카드 클릭 이벤트 막기!
+                    });
+                  });   
+
+                document.getElementById("loadJelly").addEventListener("click", function(event) {
+                    event.stopPropagation();
+                  });
+            });
+        });
+
+        document.getElementById("toggle-bread").addEventListener("click", function(event) {
+            event.stopPropagation(); // 카드 전체 클릭 이벤트 방지
+            document.getElementById("card-b-back").classList.toggle("bread"); // 배경 토글
+        });
+    
+        
+
+        function openModal(id) {
+            document.getElementById(id).style.display = "block";
+          
+            document.getElementById("modalOpener").classList.remove("hover-effect");
+            document.getElementById("modalCloser").classList.add("hover-effect");
+          }
+          
+          function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+          
+            document.getElementById("modalCloser").classList.remove("hover-effect");
+            document.getElementById("modalOpener").classList.add("hover-effect");
+          }
+          
+          document.addEventListener("DOMContentLoaded", function () {
+            // 초기 진입 시에는 modalOpener에만 효과 주기
+            document.getElementById("modalOpener").classList.add("hover-effect");
+          });
+        
+        const canvas = document.getElementById("chocoCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // 캔버스 크기 설정 (CSS와 맞춰서 조정)
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        // 브러시 설정 (초콜릿 색상)
+        ctx.strokeStyle = "#8b4513"; // 초콜릿 색상
+        ctx.fillStyle = "#8b4513";
+        ctx.lineWidth = 5;
+        ctx.lineCap = "round";
+
+        // 그림 그리기 기능
+        let drawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        canvas.addEventListener("mousedown", (event) => {
+            drawing = true;
+
+            const rect = canvas.getBoundingClientRect();
+            lastX = event.clientX - rect.left;
+            lastY = event.clientY - rect.top;
+
+            // 점 찍기
+            drawPoint(lastX, lastY);
+        });
+
+        canvas.addEventListener("mousemove", (event) => {
+            if (!drawing) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            drawLine(lastX, lastY, x, y);
+            lastX = x;
+            lastY = y;
+        });
+
+        canvas.addEventListener("mouseup", () => {
+            drawing = false;
+        });
+
+        canvas.addEventListener("mouseleave", () => {
+            drawing = false;
+        });
+
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        function drawPoint(x, y) {
+            ctx.beginPath();
+            ctx.arc(x, y, ctx.lineWidth / 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        const honey = document.querySelector('#card-h .centered-png');
+        const bee = document.querySelector('#card-h .hover-bee');
+
+        honey.addEventListener('mouseover', () => {
+            bee.style.display = 'block';
+        });
+
+        honey.addEventListener('mouseout', () => {
+            bee.style.display = 'none';
+        });
+
+        document.addEventListener('keydown', function(event) {
+            // 한/영 상태와 무관하게 'K' 키가 눌렸는지 확인
+            if (event.code === 'KeyK') {
+                const kiwiContainer = document.getElementById('kiwi-container');
+                if (!kiwiContainer) return;
+        
+                const kiwiImg = document.createElement('img');
+                kiwiImg.src = 'kiwi.png';
+                kiwiImg.style.position = 'absolute';
+                kiwiImg.style.width = '60px';
+                kiwiImg.style.pointerEvents = 'none';
+        
+                // 랜덤 위치 계산
+                const containerWidth = kiwiContainer.offsetWidth;
+                const containerHeight = kiwiContainer.offsetHeight;
+                const x = Math.random() * (containerWidth - 60);
+                const y = Math.random() * (containerHeight - 60);
+        
+                kiwiImg.style.left = `${x}px`;
+                kiwiImg.style.top = `${y}px`;
+        
+                kiwiContainer.appendChild(kiwiImg);
+        
+                // 3초 뒤 제거
+                setTimeout(() => {
+                    kiwiImg.remove();
+                }, 3000);
+            }
+        });
+        
+        // 지도를 표시할 div와 지도 옵션 설정
+        var mapContainer = document.getElementById('map');
+        var mapOption = {
+            center: new kakao.maps.LatLng(37.5838, 127.0588), // 서울시립대학교 중심 좌표
+            level: 3 // 확대 레벨
+        };
+
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+
+        // 카카오 장소 검색 API
+        async function searchPlace() {
+            const query = '맥도날드 전농점';
+            const apiKey = '8792fbd6ef8a45642a1180ac9551e751';
+
+            try {
+                const response = await fetch(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `KakaoAK ${apiKey}`
+                    }
+                });
+                const data = await response.json();
+                if (data.documents.length > 0) {
+                    const place = data.documents[0];
+                    const coords = new kakao.maps.LatLng(place.y, place.x);
+
+                    // 마커를 생성하고 지도에 표시합니다
+                    var marker = new kakao.maps.Marker({
+                        position: coords,
+                        map: map
+                    });
+
+                    // 인포윈도우를 생성하고 마커에 표시합니다
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: `<div style="padding:5px;">${place.place_name}</div>`
+                    });
+                    infowindow.open(map, marker);
+
+                    // 지도의 중심을 마커의 위치로 이동합니다
+                    map.setCenter(coords);
+                } else {
+                    alert('검색 결과가 없습니다.');
+                }
+            } catch (error) {
+                console.error('Error fetching place data:', error);
+            }
+        }
+
+            // 장소 검색 함수 호출
+            searchPlace();
+
+            let fox = document.getElementById("fox");
+            let grape = document.getElementById("grape");
+
+            let foxX = 50; // 왼쪽 기준 %
+            let grapeY = -100;
+            let gameInterval;
+
+            function startDroppingGrape() {
+            grapeY = -100;
+            grape.style.top = `${grapeY}px`;
+            grape.style.left = `${Math.random() * 80 + 10}%`; // 랜덤 위치에서 떨어짐
+
+            gameInterval = setInterval(() => {
+                grapeY += 5;
+                grape.style.top = `${grapeY}px`;
+
+                const foxRect = fox.getBoundingClientRect();
+                const grapeRect = grape.getBoundingClientRect();
+
+                // 여우 중심 영역만 판정 (가로/세로 기준 50~60% 정도로 줄임)
+                const shrinkedFox = {
+                    top: foxRect.top + (foxRect.height * 0.3),
+                    bottom: foxRect.bottom - (foxRect.height * 0.1),
+                    left: foxRect.left + (foxRect.width * 0.25),
+                    right: foxRect.right - (foxRect.width * 0.25)
+                };
+                
+                // 포도도 마찬가지로 줄여서 중심 기준
+                const shrinkedGrape = {
+                    top: grapeRect.top + (grapeRect.height * 0.2),
+                    bottom: grapeRect.bottom - (grapeRect.height * 0.1),
+                    left: grapeRect.left + (grapeRect.width * 0.2),
+                    right: grapeRect.right - (grapeRect.width * 0.2)
+                };
+
+                // 좁아진 충돌 영역으로 비교
+                const isHit = !(
+                shrinkedGrape.bottom < shrinkedFox.top ||
+                shrinkedGrape.top > shrinkedFox.bottom ||
+                shrinkedGrape.right < shrinkedFox.left ||
+                shrinkedGrape.left > shrinkedFox.right
+                );
+
+
+                if (isHit) {
+                    const card = document.getElementById("card-g");
+                    if (card.classList.contains("flipped")) {
+                      alert("여우가 포도를 받았어요! 🍇🦊");
+                    }
+                  
+                    clearInterval(gameInterval);
+                    gameInterval = null;
+                  
+                    setTimeout(startDroppingGrape, 1000);
+                  }
+                  
+                  
+
+                // 화면 아래로 벗어나면 리셋
+                if (grapeY > 400) {
+                clearInterval(gameInterval);
+                setTimeout(startDroppingGrape, 1000); // 1초 뒤 다시 떨어뜨리기
+                }
+            }, 30);
+            }
+
+            startDroppingGrape();
+
+            // 여우 움직이기
+            document.addEventListener("keydown", function(event) {
+            if (event.key === "ArrowLeft") {
+                foxX = Math.max(0, foxX - 5);
+            } else if (event.key === "ArrowRight") {
+                foxX = Math.min(100, foxX + 5);
+            }
+            fox.style.left = `${foxX}%`;
+            });
+
+            document.getElementById("loadJelly").addEventListener("click", async () => {
+                try {
+                  const response = await fetch("jelly.json");
+                  const data = await response.json();
+              
+                  const list = document.getElementById("jellyList");
+                  list.innerHTML = ""; // 초기화
+              
+                  data.forEach(jelly => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `${jelly.name} - ${jelly.flavor}`;
+                    list.appendChild(li);
+                  });
+                } catch (error) {
+                  console.error("JSON 불러오기 실패!", error);
+                }
+              });
+              
+              document.addEventListener("DOMContentLoaded", function () {
+                const marquee = document.getElementById("melonMarquee");
+              
+                for (let i = 0; i < 20; i++) {
+                  const img = document.createElement("img");
+                  img.src = "melon.png";
+                  img.alt = "멜론";
+                  img.height = 70;
+                  img.style.marginRight = "10px"; // 간격
+                  marquee.appendChild(img);
+                }
+              });
+              
+              document.addEventListener("DOMContentLoaded", function () {
+                const btn = document.getElementById("showNutBtn");
+                const container = document.getElementById("nutImageContainer");
+              
+                btn.addEventListener("click", function (event) {
+                  event.stopPropagation(); // 카드 안 뒤집히게!
+                  const img = document.createElement("img");
+                  img.src = "nut.png";
+                  img.alt = "땅콩";
+                  img.style.width = "60px";
+                  
+                  container.appendChild(img);
+                });
+              });
+              
+              document.addEventListener("DOMContentLoaded", function () {
+                const orange = document.getElementById("orangeImg");
+              
+                let opacity = 1; // 시작 opacity
+              
+                orange.addEventListener("click", function (event) {
+                  event.stopPropagation(); // 카드 안 뒤집히게!
+                  
+                  if (opacity > 0) {
+                    opacity -= 0.2;
+                    orange.style.opacity = opacity;
+                  }
+                });
+              });
+
+              document.addEventListener("DOMContentLoaded", function () {
+                const input = document.getElementById("peachInput");
+                const progress = document.getElementById("peachProgress");
+                const text = document.getElementById("peachText");
+              
+                input.addEventListener("click", e => e.stopPropagation());
+              
+                input.addEventListener("input", function () {
+                  let value = parseInt(input.value);
+                  if (isNaN(value) || value < 0) value = 0;
+                  if (value > 100) value = 100;
+              
+                  progress.value = value;
+                  text.textContent = `🍑 호감도: ${value}%`;
+                });
+              });
+              
+              document.addEventListener("DOMContentLoaded", function () {
+                const tortilla = document.querySelector("#tortilla");
+                const ingredients = document.querySelectorAll(".ingredient");
+                const completeText = document.querySelector("#completeText");
+              
+                let droppedCount = 0;
+              
+                ingredients.forEach(ingredient => {
+                  // 드래그 시작
+                  ingredient.addEventListener("dragstart", e => {
+                    e.dataTransfer.setData("id", ingredient.alt);
+                  });
+              
+                  ingredient.addEventListener("click", e => e.stopPropagation()); // 카드 클릭 방지
+                });
+              
+                // 또띠아 드롭 이벤트
+                tortilla.addEventListener("dragover", e => {
+                  e.preventDefault(); // 드롭 허용
+                });
+              
+                let dropPositions = [
+                  { x: 30, y: 30 },
+                  { x: 70, y: 40 },
+                  { x: 50, y: 80 },
+                  { x: 90, y: 70 }
+                ];
+
+                let currentIndex = 0;
+
+                tortilla.addEventListener("drop", e => {
+                  e.preventDefault();
+                  const x = tortilla.offsetLeft + Math.random() * 60;
+                  const y = tortilla.offsetTop + Math.random() * 60;
+              
+                  const dragged = document.querySelector(`img[alt="${e.dataTransfer.getData("id")}"]`);
+                  dragged.style.left = `${x}px`;
+                  dragged.style.top = `${y}px`;
+              
+                  // 중복 방지
+                  if (!dragged.classList.contains("dropped")) {
+                    droppedCount++;
+                    dragged.classList.add("dropped");
+                  }
+              
+                  if (droppedCount >= 4) {
+                    completeText.style.display = "block";
+                  }
+                });
+              });
+              
+              document.addEventListener("DOMContentLoaded", function () {
+                const box = document.querySelector("#randomBox");
+                const berry = document.querySelector("#rasberry");
+              
+                box.addEventListener("click", function (e) {
+                  e.stopPropagation(); // 🛑 카드 플립 막기!
+
+                  // 1. 랜덤 이미지
+                  const randomImgUrl = `https://picsum.photos/300/130?random=${Math.floor(Math.random() * 1000)}`;
+                  box.style.backgroundImage = `url('${randomImgUrl}')`;
+              
+                  // 2. 랜덤 위치에 라즈베리
+                  const boxWidth = box.clientWidth;
+                  const boxHeight = box.clientHeight;
+              
+                  const randX = Math.floor(Math.random() * (boxWidth - 40));
+                  const randY = Math.floor(Math.random() * (boxHeight - 40));
+              
+                  berry.style.left = `${randX}px`;
+                  berry.style.top = `${randY}px`;
+                });
+              });
+              
+              document.addEventListener("DOMContentLoaded", function () {
+                const textarea = document.getElementById("tomatoText");
+                const saveBtn = document.getElementById("saveTomato");
+                const notice = document.getElementById("savedNotice");
+              
+                // 저장된 값 불러오기
+                const saved = localStorage.getItem("tomatoNote");
+                if (saved) textarea.value = saved;
+              
+                saveBtn.addEventListener("click", function (e) {
+                  e.stopPropagation(); // 카드 안 뒤집히게!
+                  localStorage.setItem("tomatoNote", textarea.value);
+                  notice.style.display = "block";
+                  setTimeout(() => {
+                    notice.style.display = "none";
+                  }, 1500);
+                });
+              
+                textarea.addEventListener("click", e => e.stopPropagation()); // 플립 방지
+              });
+              
+              // watermelon
+              document.addEventListener("DOMContentLoaded", function () {
+                const img = document.getElementById("watermelon");
+                const text = document.getElementById("widthText");
+                const grow = document.getElementById("growBtn");
+                const shrink = document.getElementById("shrinkBtn");
+              
+                let currentWidth = 200;
+              
+                grow.addEventListener("click", function (e) {
+                  e.stopPropagation();
+                  currentWidth += 20;
+                  img.style.width = `${currentWidth}px`;
+                  text.textContent = `Width: ${currentWidth}px`;
+                });
+              
+                shrink.addEventListener("click", function (e) {
+                  e.stopPropagation();
+                  if (currentWidth > 60) {
+                    currentWidth -= 20;
+                    img.style.width = `${currentWidth}px`;
+                    text.textContent = `Width: ${currentWidth}px`;
+                  }
+                });
+              });
+
+              //화면 초기화 기능
+              // ⏳ 10초 후부터 hurryText 깜빡이기 시작
+              // 5초 전부터 Hurry 텍스트 등장
+              setTimeout(() => {
+                document.getElementById("hurryModal").style.display = "block";
+              }, 55000);
+
+
+              // 커튼 내려오고 다시보기 버튼 보이게
+              setTimeout(() => {
+                const curtain = document.getElementById("curtain");
+                curtain.classList.add("folded");
+
+                document.getElementById("reloadBtn").style.display = "block";
+                document.getElementById("hurryModal").style.display = "none";
+              }, 60000);
+
+              //다시 올라가게
+              document.getElementById("reloadBtn").addEventListener("click", () => {
+                const curtain = document.getElementById("curtain");
+              
+                // 올라가는 연출
+                curtain.classList.remove("folded");
+              
+                // 1.5초 뒤에 실제 새로고침 (애니메이션 다 끝난 후)
+                setTimeout(() => {
+                  location.reload();
+                }, 1500);
+              });
+              
+
+              
+    </script>
+</body>
+</html>
